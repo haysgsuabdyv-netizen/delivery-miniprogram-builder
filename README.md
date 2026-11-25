@@ -1,3 +1,8 @@
 # delivery-miniprogram-builder
 
-作者署名为 [haysgsuabdyv-netizen](https://github.com/haysgsuabdyv-netizen)。
+## 署名
+
+- Gavin·he
+- 华骏睿
+- 王文华
+- 鲁思成
