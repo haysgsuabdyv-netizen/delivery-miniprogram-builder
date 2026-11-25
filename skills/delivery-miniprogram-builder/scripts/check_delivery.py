@@ -360,25 +360,33 @@ def run_checks(root: Path) -> dict:
         "链路断裂：02 未启动而 03 已启动" if (not s03 and s02) else "顺序正常",
     )
 
-    # --- 04: acceptance checklist (always checked) ---
-    needed = [
-        "判断有依据", "架构来自资料", "品牌一致", "可串联",
-        "资料不全仍能开工判断", "冲突不静默择一",
-    ]
-    missing_items = [k for k in needed if k not in docs["04"]]
-    add(
-        "04 验收清单覆盖六条验收标准",
-        not missing_items,
-        "缺少：" + "、".join(missing_items) if missing_items else "六条齐备",
-    )
-    add(
-        "04 如实记录已执行与未执行的校验",
-        ("校验" in docs["04"]) and (
-            "未执行" in docs["04"] or "未跑" in docs["04"] or "待联调" in docs["04"]
-            or "未启动" in docs["04"]
-        ),
-        "不把没跑过的编译/预览/联调写成通过",
-    )
+    # --- 04: honest deferral or the regular acceptance checklist ---
+    acceptance = docs["04"]
+    if mode == "暂缓" and re.search(r"(?m)^\s*未启动\s*[：:]", acceptance):
+        add(
+            "04 验收标注未启动且未编造编号",
+            DECISION_IDS.search(acceptance) is None,
+            "暂缓时保留 04 章节，标明待补齐。",
+        )
+    else:
+        needed = [
+            "判断有依据", "架构来自资料", "品牌一致", "可串联",
+            "资料不全仍能开工判断", "冲突不静默择一",
+        ]
+        missing_items = [k for k in needed if k not in docs["04"]]
+        add(
+            "04 验收清单覆盖六条验收标准",
+            not missing_items,
+            "缺少：" + "、".join(missing_items) if missing_items else "六条齐备",
+        )
+        add(
+            "04 如实记录已执行与未执行的校验",
+            ("校验" in docs["04"]) and (
+                "未执行" in docs["04"] or "未跑" in docs["04"] or "待联调" in docs["04"]
+                or "未启动" in docs["04"]
+            ),
+            "不把没跑过的编译/预览/联调写成通过",
+        )
 
     # --- Cross-mode consistency ---
     if mode == "暂缓":
